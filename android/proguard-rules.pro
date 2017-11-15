@@ -1,0 +1,2 @@
+-keep class com.brentvatne.react.* {*;}
+-keep class com.android.vending.expansion.zipfile.* {*;}
