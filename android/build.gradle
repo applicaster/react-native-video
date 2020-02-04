@@ -1,8 +1,23 @@
-apply plugin: 'com.android.library'
-
 def safeExtGet(prop, fallback) {
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
+
+buildscript {
+    // The Android Gradle plugin is only required when opening the android folder stand-alone.
+    // This avoids unnecessary downloads and potential conflicts when the library is included as a
+    // module dependency in an application project.
+    if (project == rootProject) {
+        repositories {
+            google()
+            jcenter()
+        }
+        dependencies {
+            classpath 'com.android.tools.build:gradle:3.5.2'
+        }
+    }
+}
+
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion safeExtGet('compileSdkVersion', 28)
@@ -17,10 +32,30 @@ android {
             abiFilters "armeabi-v7a", "x86"
         }
     }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            consumerProguardFiles 'proguard-rules.pro'
+        }
+
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            consumerProguardFiles 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+        warning 'InvalidPackage'
+    }
+
 }
 
 dependencies {
     //noinspection GradleDynamicVersion
-    implementation "com.facebook.react:react-native:${safeExtGet('reactNativeVersion', '+')}"
+    compileOnly 'com.facebook.react:react-native:+'  // From node_modules
     implementation 'com.yqritc:android-scalablevideoview:1.0.4'
 }
